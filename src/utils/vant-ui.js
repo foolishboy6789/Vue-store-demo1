@@ -1,5 +1,10 @@
 import Vue from 'vue'
-import { Tabbar, TabbarItem } from 'vant'
+import { Button, Field, Form, Image as VanImage, NavBar, Tabbar, TabbarItem } from 'vant'
 
 Vue.use(Tabbar)
-Vue.use(TabbarItem)
+  .use(TabbarItem)
+  .use(NavBar)
+  .use(Button)
+  .use(Form)
+  .use(Field)
+  .use(VanImage)
