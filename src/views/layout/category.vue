@@ -1,13 +1,14 @@
 <template>
-  <div class="App">
-    <router-view/>
-
+  <div class="category">
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'CategoryIndex'
+}
 </script>
 
 <style scoped>
+
 </style>

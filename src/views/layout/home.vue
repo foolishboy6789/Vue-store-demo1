@@ -1,13 +1,15 @@
 <template>
-  <div class="App">
-    <router-view/>
-
+  <div class="home">
+    我是home
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'HomeIndex'
+}
 </script>
 
 <style scoped>
+
 </style>

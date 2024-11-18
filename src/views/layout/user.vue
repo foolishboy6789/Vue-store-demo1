@@ -1,13 +1,14 @@
 <template>
-  <div class="App">
-    <router-view/>
-
+  <div class="user">
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'UserIndex'
+}
 </script>
 
 <style scoped>
+
 </style>

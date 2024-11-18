@@ -1,13 +1,14 @@
 <template>
-  <div class="App">
-    <router-view/>
-
+  <div class="cart">
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'CartIndex'
+}
 </script>
 
 <style scoped>
+
 </style>
