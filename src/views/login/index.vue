@@ -18,17 +18,18 @@
           placeholder="请输入手机号码"
         />
         <van-field
-          v-model="imageCode"
+          v-model="imgCode"
           :rules="[{ required: true }]"
           name="imageCode"
           placeholder="请输入图形验证码"
-          type="number"
+          type="text"
         >
           <template #button>
             <van-image
-              :src="require('@/assets/code.png')"
+              v-if="imgUrl"
+              :src="imgUrl"
               fit="contain"
-              width="80px"
+              @click="getImgCode"
             />
           </template>
         </van-field>
@@ -40,7 +41,13 @@
           type="number"
         >
           <template #button>
-            <div class="send">发送验证码</div>
+            <div v-if="sendTime===60" class="send" @click="sendCode">发送验证码</div>
+            <div v-else class="sending" @click="Toast({
+              message:`请求过于频繁,请${sendTime}秒后再试`,
+              position: 'bottom'
+            })">
+              重新发送({{ sendTime }})
+            </div>
           </template>
         </van-field>
 
@@ -53,22 +60,82 @@
 </template>
 
 <script>
+import { Toast } from 'vant'
+import { getImgCodeApi, login, sendCodeApi } from '@/api/login'
+import { md5encrypt } from '@/utils/md5util'
+
 export default {
   name: 'LoginIndex',
+  created () {
+    this.getImgCode()
+  },
+  destroyed () {
+    if (this.timer) clearInterval(this.timer)
+  },
+  computed: {
+    Toast () {
+      return Toast
+    }
+  },
   data () {
     return {
       phone: '',
-      imageCode: '',
+      imgCode: '',
+      imgUrl: '',
       code: '',
-      phoneReg: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
+      phoneReg: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+      sendTime: 60
     }
   },
   methods: {
     onClickLeft () {
       this.$router.back()
     },
-    onSubmit (values) {
-      console.log('submit!', values)
+    onSubmit: async function (values) {
+      if (!this.check()) return
+      const res = await login(false, this.phone, {}, this.code)
+      console.log(res)
+      Toast({
+        message: '登录成功',
+        position: 'bottom'
+      })
+      await this.$router.push('/')
+    },
+    async getImgCode () {
+      const { data: { base64, key, md5 } } = await getImgCodeApi()
+      this.imgUrl = base64
+      this.imgKey = key
+      this.md5 = md5
+    },
+    async sendCode () {
+      if (!this.check()) return
+      this.sendTime--
+      Toast.success('发送成功,请注意查收')
+      await sendCodeApi(this.imgCode, this.imgKey, this.phone)
+      this.timer = setInterval(() => {
+        this.sendTime--
+        if (this.sendTime <= 0) {
+          this.sendTime = 60
+          clearInterval(this.timer)
+        }
+      }, 1000)
+    },
+    check () {
+      if (!this.phoneReg.test(this.phone)) {
+        Toast({
+          message: '请输入正确的手机号',
+          position: 'bottom'
+        })
+        return false
+      }
+      if (this.md5 !== md5encrypt(this.imgCode.toLowerCase())) {
+        Toast({
+          message: '请输入正确的图形验证码',
+          position: 'bottom'
+        })
+        return false
+      }
+      return true
     }
   }
 }
@@ -85,5 +152,9 @@ export default {
   p {
     color: #ccc;
   }
+}
+
+.van-image {
+  height: 24px;
 }
 </style>
