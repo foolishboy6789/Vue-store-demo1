@@ -94,7 +94,7 @@ export default {
     onSubmit: async function (values) {
       if (!this.check()) return
       const res = await login(false, this.phone, {}, this.code)
-      console.log(res)
+      this.$store.commit('user/setUserInfo', res.data)
       Toast({
         message: '登录成功',
         position: 'bottom'
