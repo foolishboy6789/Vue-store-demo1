@@ -1,5 +1,20 @@
 import Vue from 'vue'
-import { Button, Field, Form, Image as VanImage, NavBar, Tabbar, TabbarItem, Toast } from 'vant'
+import {
+  Button,
+  Field,
+  Form,
+  Grid,
+  GridItem,
+  Image as VanImage,
+  Lazyload,
+  NavBar,
+  Search,
+  Swipe,
+  SwipeItem,
+  Tabbar,
+  TabbarItem,
+  Toast
+} from 'vant'
 
 Vue.use(Tabbar)
   .use(TabbarItem)
@@ -9,3 +24,12 @@ Vue.use(Tabbar)
   .use(Field)
   .use(VanImage)
   .use(Toast)
+  .use(Search)
+  .use(Swipe)
+  .use(SwipeItem)
+  .use(Grid)
+  .use(GridItem)
+
+Vue.use(Lazyload, {
+  lazyComponent: true
+})
