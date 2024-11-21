@@ -9,9 +9,7 @@
 export default {
   name: 'NotFoundIndex',
   data () {
-    return {
-      autoReplace: 0
-    }
+    return {}
   },
   mounted () {
     this.autoReplace = setTimeout(() => {

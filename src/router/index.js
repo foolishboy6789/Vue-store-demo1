@@ -13,6 +13,8 @@ import Home from '@/views/layout/home'
 import Category from '@/views/layout/category'
 import User from '@/views/layout/user'
 import Cart from '@/views/layout/cart'
+import store from '@/store'
+import { Toast } from 'vant'
 
 Vue.use(VueRouter)
 
@@ -40,6 +42,22 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+const authUrls = ['/pay', '/myorder']
+
+router.beforeEach((to, from, next) => {
+  if (authUrls.includes(to.path)) {
+    const token = store.getters.token
+    if (!token) {
+      Toast({
+        message: '请先登录',
+        position: 'bottom'
+      })
+      next('/login')
+    }
+  }
+  next()
 })
 
 export default router

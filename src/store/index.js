@@ -6,7 +6,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {},
-  getters: {},
+  getters: {
+    token (state) {
+      return state.user.userInfo.token
+    }
+  },
   mutations: {},
   actions: {},
   modules: {
