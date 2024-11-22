@@ -5,6 +5,7 @@ import {
   Form,
   Grid,
   GridItem,
+  Icon,
   Image as VanImage,
   Lazyload,
   NavBar,
@@ -29,6 +30,7 @@ Vue.use(Tabbar)
   .use(SwipeItem)
   .use(Grid)
   .use(GridItem)
+  .use(Icon)
 
 Vue.use(Lazyload, {
   lazyComponent: true

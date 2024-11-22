@@ -14,30 +14,24 @@
 
     <!-- 轮播图 -->
     <van-swipe :autoplay="3000" class="my-swipe" indicator-color="white">
-      <van-swipe-item>
-        <img alt="" src="@/assets/banner1.jpg">
-      </van-swipe-item>
-      <van-swipe-item>
-        <img alt="" src="@/assets/banner2.jpg">
-      </van-swipe-item>
-      <van-swipe-item>
-        <img alt="" src="@/assets/banner3.jpg">
+      <van-swipe-item v-for="item in bannerList" :key="item.imgUrl">
+        <img :src="item.imgUrl" alt="">
       </van-swipe-item>
     </van-swipe>
 
     <!-- 导航 -->
     <van-grid column-num="5" icon-size="40">
       <van-grid-item
-        v-for="item in 10" :key="item"
-        icon="https://smart-shop.itheima.net/uploads/10001/20230320/58a7c1f62df4cb1eb47fe83ff0e566e6.png"
-        text="新品首发"
+        v-for="item in navList" :key="item.imgUrl"
+        :icon="item.imgUrl"
+        :text="item.text"
         @click="$router.push('/category')"
       />
     </van-grid>
 
     <!-- 主会场 -->
     <div class="main">
-      <img alt="" src="@/assets/main.png">
+      <img :src="mainImage" alt="">
     </div>
 
     <!-- 猜你喜欢 -->
@@ -45,7 +39,7 @@
       <p class="guess-title">—— 猜你喜欢 ——</p>
 
       <div class="goods-list">
-        <GoodsItem v-for="item in 10" :key="item"></GoodsItem>
+        <GoodsItem v-for="item in goodsList" :key="item.goods_id" :item="item"></GoodsItem>
       </div>
     </div>
   </div>
@@ -55,12 +49,32 @@
 <script>
 
 import GoodsItem from '@/components/GoodsItem.vue'
+import { getHomeData } from '@/api/home'
+
+const Constants = {
+  banner: 1,
+  navBar: 3,
+  goods: 6,
+  image: 4
+}
 
 export default {
   name: 'HomeIndex',
   components: { GoodsItem },
   data () {
-    return {}
+    return {
+      bannerList: [],
+      navList: [],
+      goodsList: [],
+      mainImage: ''
+    }
+  },
+  async created () {
+    const { data: { pageData } } = await getHomeData()
+    this.bannerList = pageData.items[Constants.banner].data
+    this.navList = pageData.items[Constants.navBar].data
+    this.goodsList = pageData.items[Constants.goods].data
+    this.mainImage = pageData.items[Constants.image].data[0].imgUrl
   }
 }
 </script>

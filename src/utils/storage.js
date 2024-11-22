@@ -1,4 +1,5 @@
 const INFO_KEY = 'hm_shopping_info'
+const HISTORY_KEY = 'hm_shopping_history'
 
 export const getInfo = () => {
   const defaultInfo = { token: '', userId: '' }
@@ -12,4 +13,13 @@ export const setInfo = (info) => {
 
 export const removeInfo = () => {
   localStorage.removeItem(INFO_KEY)
+}
+
+export const getHistory = () => {
+  const res = localStorage.getItem(HISTORY_KEY)
+  return res ? JSON.parse(res) : []
+}
+
+export const setHistory = (history) => {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
 }

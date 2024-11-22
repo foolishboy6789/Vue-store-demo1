@@ -1,7 +1,7 @@
 <template>
-<div class="pro-detail">
-    我是prodetail
-</div>
+  <div class="pro-detail">
+    我是prodetail-{{ this.$route.params.id }}
+  </div>
 </template>
 
 <script>
