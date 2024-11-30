@@ -3,11 +3,11 @@
     <van-nav-bar fixed left-arrow title="商品列表" @click-left="$router.go(-1)"/>
 
     <van-search
+      :value="goodsName || '搜索商品'"
       background="#ffffff"
       readonly
       shape="round"
       show-action
-      value="手机"
       @click="$router.replace('/search')"
     >
       <template #action>
@@ -17,27 +17,84 @@
 
     <!-- 排序选项按钮 -->
     <div class="sort-btns">
-      <div class="sort-item">综合</div>
-      <div class="sort-item">销量</div>
-      <div class="sort-item">价格</div>
+      <div :class="{active: sortType==='all'}"
+           class="sort-item"
+           @click="sortType = 'all'">
+        综合
+      </div>
+      <div :class="{active: sortType==='sales'}"
+           class="sort-item"
+           @click="sortType = 'sales'">
+        销量
+      </div>
+      <div :class="{active: sortType==='price'}"
+           class="sort-item"
+           @click="
+           sortPrice = sortType === 'price'?sortPrice^1:sortPrice;
+           sortType = 'price'
+          ">
+        价格({{ sortPrice === 0 ? '升序' : '降序' }})
+      </div>
     </div>
 
     <div class="goods-list">
-      <GoodsItem v-for="item in 10" :key="item"></GoodsItem>
+      <GoodsItem v-for="item in this.goodsList" :key="item.goods_id" :item="item"></GoodsItem>
     </div>
   </div>
 </template>
 
 <script>
 import GoodsItem from '@/components/GoodsItem.vue'
+import { getGoodsListApi } from '@/api/goods'
 
 export default {
   name: 'ListIndex',
-  components: { GoodsItem }
+  components: { GoodsItem },
+  data () {
+    return {
+      sortType: 'all',
+      sortPrice: 0,
+      categoryId: '',
+      page: 1,
+      goodsList: []
+    }
+  },
+  async created () {
+    this.getGoodsList()
+  },
+  methods: {
+    async getGoodsList () {
+      const { data: { list } } = await getGoodsListApi({
+        sortType: this.sortType,
+        sortPrice: this.sortPrice,
+        categoryId: this.categoryId,
+        goodsName: this.goodsName,
+        page: this.page
+      })
+      this.goodsList = list.data
+    }
+  },
+  computed: {
+    goodsName () {
+      return this.$route.query.search
+    }
+  },
+  watch: {
+    sortPrice (val) {
+      this.getGoodsList()
+    },
+    sortType (val) {
+      this.getGoodsList()
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
+.active {
+  color: #f03c3c;
+}
+
 .search {
   padding-top: 46px;
 
