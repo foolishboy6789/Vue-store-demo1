@@ -54,7 +54,6 @@ export default {
     return {
       sortType: 'all',
       sortPrice: 0,
-      categoryId: '',
       page: 1,
       goodsList: []
     }
@@ -75,6 +74,9 @@ export default {
     }
   },
   computed: {
+    categoryId () {
+      return this.$route.query.categoryId
+    },
     goodsName () {
       return this.$route.query.search
     }

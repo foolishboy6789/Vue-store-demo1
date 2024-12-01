@@ -5,3 +5,20 @@ export const getGoodsListApi = (params) => {
     params
   })
 }
+
+export const getGoodsDetailApi = (goodsId) => {
+  return request.get('/goods/detail', {
+    params: {
+      goodsId
+    }
+  })
+}
+
+export const getGoodsCommentApi = (goodsId, limit) => {
+  return request.get('/comment/listRows', {
+    params: {
+      goodsId,
+      limit
+    }
+  })
+}

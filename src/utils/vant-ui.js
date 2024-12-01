@@ -9,6 +9,7 @@ import {
   Image as VanImage,
   Lazyload,
   NavBar,
+  Rate,
   Search,
   Swipe,
   SwipeItem,
@@ -31,6 +32,7 @@ Vue.use(Tabbar)
   .use(Grid)
   .use(GridItem)
   .use(Icon)
+  .use(Rate)
 
 Vue.use(Lazyload, {
   lazyComponent: true
