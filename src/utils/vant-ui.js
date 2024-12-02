@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  ActionSheet,
   Button,
   Field,
   Form,
@@ -33,6 +34,7 @@ Vue.use(Tabbar)
   .use(GridItem)
   .use(Icon)
   .use(Rate)
+  .use(ActionSheet)
 
 Vue.use(Lazyload, {
   lazyComponent: true

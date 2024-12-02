@@ -75,9 +75,39 @@
         <van-icon name="shopping-cart-o"/>
         <span>购物车</span>
       </div>
-      <div class="btn-add">加入购物车</div>
-      <div class="btn-buy">立刻购买</div>
+      <div class="btn-add" @click="addFn">加入购物车</div>
+      <div class="btn-buy" @click="buyFn">立刻购买</div>
     </div>
+
+    <van-action-sheet v-model="showPannel" :title="mode==='cart'?'加入购物车':'立即购买'">
+      <div class="product">
+        <div class="product-title">
+          <div class="left">
+            <img :src="detail.goods_image" alt="">
+          </div>
+          <div class="right">
+            <div class="price">
+              <span>¥</span>
+              <span class="nowprice">{{ detail.goods_price_min }}</span>
+            </div>
+            <div class="count">
+              <span>库存</span>
+              <span>{{ detail.stock_total }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="num-box">
+          <span>数量</span>
+          数字框占位
+        </div>
+        <div v-if="detail.stock_total>0" class="showbtn">
+          <div v-if="mode==='cart'" class="btn">加入购物车</div>
+          <div v-else class="btn now">立刻购买</div>
+        </div>
+        <div v-else class="btn-none">该商品已抢完</div>
+      </div>
+    </van-action-sheet>
+
   </div>
 </template>
 
@@ -94,7 +124,9 @@ export default {
       detail: {},
       commentList: [],
       commentTotal: 0,
-      defaultImg
+      defaultImg,
+      showPannel: false,
+      mode: 'cart'
     }
   },
   methods: {
@@ -110,6 +142,14 @@ export default {
       const { data: { list, total } } = await getGoodsCommentApi(this.goodsId, 3)
       this.commentList = list
       this.commentTotal = total
+    },
+    addFn () {
+      this.mode = 'cart'
+      this.showPannel = true
+    },
+    buyFn () {
+      this.mode = 'buy'
+      this.showPannel = true
     }
   },
   computed: {
@@ -293,5 +333,60 @@ export default {
 
 .tips {
   padding: 10px;
+}
+
+.product {
+  .product-title {
+    display: flex;
+
+    .left {
+      img {
+        width: 90px;
+        height: 90px;
+      }
+
+      margin: 10px;
+    }
+
+    .right {
+      flex: 1;
+      padding: 10px;
+
+      .price {
+        font-size: 14px;
+        color: #fe560a;
+
+        .nowprice {
+          font-size: 24px;
+          margin: 0 5px;
+        }
+      }
+    }
+  }
+
+  .num-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .btn, .btn-none {
+    height: 40px;
+    line-height: 40px;
+    margin: 20px;
+    border-radius: 20px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 148, 2);
+  }
+
+  .btn.now {
+    background-color: #fe5630;
+  }
+
+  .btn-none {
+    background-color: #cccccc;
+  }
 }
 </style>
