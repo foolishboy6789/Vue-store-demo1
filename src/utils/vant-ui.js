@@ -2,6 +2,9 @@ import Vue from 'vue'
 import {
   ActionSheet,
   Button,
+  Checkbox,
+  CheckboxGroup,
+  Dialog,
   Field,
   Form,
   Grid,
@@ -35,6 +38,9 @@ Vue.use(Tabbar)
   .use(Icon)
   .use(Rate)
   .use(ActionSheet)
+  .use(Dialog)
+  .use(Checkbox)
+  .use(CheckboxGroup)
 
 Vue.use(Lazyload, {
   lazyComponent: true

@@ -91,7 +91,7 @@ export default {
     onClickLeft () {
       this.$router.back()
     },
-    onSubmit: async function (values) {
+    async onSubmit () {
       if (!this.check()) return
       const res = await login(false, this.phone, {}, this.code)
       this.$store.commit('user/setUserInfo', res.data)
@@ -99,7 +99,8 @@ export default {
         message: '登录成功',
         position: 'bottom'
       })
-      await this.$router.push('/')
+      const url = this.$route.query.backUrl || '/'
+      this.$router.replace(url)
     },
     async getImgCode () {
       const { data: { base64, key, md5 } } = await getImgCodeApi()

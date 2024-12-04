@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'vant'
+import store from '@/store'
 
 const instance = axios.create({
   baseURL: 'https://smart-shop.itheima.net/index.php?s=/api',
@@ -10,6 +11,7 @@ const instance = axios.create({
 instance.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   config.headers.platform = 'H5'
+  if (store.getters.token) config.headers['Access-Token'] = store.getters.token
   Toast.loading({
     message: '加载中...',
     forbidClick: true,

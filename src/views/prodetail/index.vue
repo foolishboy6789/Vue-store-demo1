@@ -72,6 +72,7 @@
         <span>首页</span>
       </div>
       <div class="icon-cart">
+        <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o"/>
         <span>购物车</span>
       </div>
@@ -98,10 +99,10 @@
         </div>
         <div class="num-box">
           <span>数量</span>
-          数字框占位
+          <CountBox v-model="addCount"></CountBox>
         </div>
         <div v-if="detail.stock_total>0" class="showbtn">
-          <div v-if="mode==='cart'" class="btn">加入购物车</div>
+          <div v-if="mode==='cart'" class="btn" @click="addCart">加入购物车</div>
           <div v-else class="btn now">立刻购买</div>
         </div>
         <div v-else class="btn-none">该商品已抢完</div>
@@ -114,9 +115,13 @@
 <script>
 import { getGoodsCommentApi, getGoodsDetailApi } from '@/api/goods'
 import defaultImg from '@/assets/default-avatar.png'
+import CountBox from '@/components/CountBox.vue'
+import { addCartApi } from '@/api/cart'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'ProDetailIndex',
+  components: { CountBox },
   data () {
     return {
       images: [],
@@ -126,7 +131,8 @@ export default {
       commentTotal: 0,
       defaultImg,
       showPannel: false,
-      mode: 'cart'
+      mode: 'cart',
+      addCount: 1
     }
   },
   methods: {
@@ -150,12 +156,38 @@ export default {
     buyFn () {
       this.mode = 'buy'
       this.showPannel = true
-    }
+    },
+    async addCart () {
+      if (!this.$store.getters.token) {
+        this.$dialog.confirm({
+          title: '温馨提示',
+          message: '此时需要登录才能继续操作哦!',
+          confirmButtonText: '去登录',
+          cancelButtonText: '再逛逛'
+        })
+          .then(() => {
+            this.$router.replace({
+              path: '/login',
+              query: {
+                backUrl: this.$route.fullPath
+              }
+            })
+          })
+          .catch(() => {
+            // on cancel
+          })
+        return
+      }
+      const { data: { cartTotal } } = await addCartApi(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
+      this.setCartTotal(cartTotal)
+    },
+    ...mapMutations('cart', ['setCartTotal'])
   },
   computed: {
     goodsId () {
       return this.$route.params.id
-    }
+    },
+    ...mapState('cart', ['cartTotal'])
   },
   created () {
     this.getGoodsDetail()
@@ -387,6 +419,24 @@ export default {
 
   .btn-none {
     background-color: #cccccc;
+  }
+}
+
+.footer .icon-cart {
+  position: relative;
+  padding: 0 6px;
+
+  .num {
+    z-index: 999;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    min-width: 16px;
+    padding: 0 4px;
+    color: #fff;
+    text-align: center;
+    background-color: #ee0a24;
+    border-radius: 50%;
   }
 }
 </style>
