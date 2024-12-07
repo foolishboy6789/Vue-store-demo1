@@ -1,57 +1,114 @@
 <template>
   <div class="cart">
-    <van-nav-bar fixed title="购物车"/>
-    <!-- 购物车开头 -->
-    <div class="cart-title">
-      <span class="all">共<i>4</i>件商品</span>
-      <span class="edit">
+    <div v-if="cartList.length>0" class="cart-box">
+      <van-nav-bar fixed title="购物车"/>
+      <!-- 购物车开头 -->
+      <div class="cart-title">
+        <span class="all">共<i>{{ cartTotal || 0 }}</i>件商品</span>
+        <span class="edit" @click="isEdit = !isEdit">
         <van-icon name="edit"/>
-        编辑
+        {{ !isEdit ? '编辑' : '取消编辑' }}
       </span>
-    </div>
+      </div>
 
-    <!-- 购物车列表 -->
-    <div class="cart-list">
-      <div v-for="item in 10" :key="item" class="cart-item">
-        <van-checkbox></van-checkbox>
-        <div class="show">
-          <img alt="" src="http://cba.itlike.com/public/uploads/10001/20230321/a072ef0eef1648a5c4eae81fad1b7583.jpg">
+      <!-- 购物车列表 -->
+      <div class="cart-list">
+        <div v-for="item in cartList" :key="item.goods_id" class="cart-item">
+          <van-checkbox :value="item.isChecked" icon-size="18" @click="toggleCheck(item.goods_id)"></van-checkbox>
+          <div class="show" @click="$router.push(`/prodetail/${item.goods_id}`)">
+            <img :src="item.goods.goods_image" alt="">
+          </div>
+          <div class="info">
+            <span class="tit text-ellipsis-2">{{ item.goods.goods_name }}</span>
+            <span class="bottom">
+        <div class="price">¥ <span>{{ item.goods.goods_price_min }}</span></div>
+        <CountBox :value="item.goods_num" @input="changeCount($event, item.goods_id, item.goods_sku_id)"></CountBox>
+      </span>
+          </div>
         </div>
-        <div class="info">
-          <span class="tit text-ellipsis-2">新Pad 14英寸 12+128 远峰蓝 M6平板电脑 智能安卓娱乐十核游戏学习二合一 低蓝光护眼超清4K全面三星屏5GWIFI全网通 蓝魔快本平板</span>
-          <span class="bottom">
-            <div class="price">¥ <span>1247.04</span></div>
-            <div class="count-box">
-              <button class="minus">-</button>
-              <input :value="4" class="inp" readonly type="text">
-              <button class="add">+</button>
-            </div>
-          </span>
+      </div>
+
+      <div class="footer-fixed">
+        <div class="all-check">
+          <van-checkbox :value="isAllChecked" icon-size="18" @click="toggleAllCheck(!isAllChecked)"></van-checkbox>
+          全选
+        </div>
+        <div class="all-total">
+          <div class="price">
+            <span>合计：</span>
+            <span>¥ <i class="totalPrice">{{ selPrice }}</i></span>
+          </div>
+          <div v-if="!isEdit" :class="{ disabled: selCount === 0 }" class="goPay">
+            结算({{ selCount }})
+          </div>
+          <div v-else :class="{ disabled: selCount === 0 }" class="delete" @click="handleDel">
+            删除({{ selCount }})
+          </div>
         </div>
       </div>
     </div>
-
-    <div class="footer-fixed">
-      <div class="all-check">
-        <van-checkbox icon-size="18"></van-checkbox>
-        全选
+    <div v-else class="empty-cart">
+      <img alt="" src="@/assets/empty.png">
+      <div class="tips">
+        您的购物车是空的, 快去逛逛吧
       </div>
-
-      <div class="all-total">
-        <div class="price">
-          <span>合计：</span>
-          <span>¥ <i class="totalPrice">99.99</i></span>
-        </div>
-        <div v-if="true" class="goPay">结算(5)</div>
-        <div v-else class="delete">删除</div>
-      </div>
+      <div class="btn" @click="$router.push('/')">去逛逛</div>
     </div>
   </div>
 </template>
 
 <script>
+import CountBox from '@/components/CountBox.vue'
+import { mapGetters, mapState } from 'vuex'
+
 export default {
-  name: 'CartIndex'
+  name: 'CartIndex',
+  components: {
+    CountBox
+  },
+  data () {
+    return {
+      isEdit: false
+    }
+  },
+  created () {
+    if (this.$store.getters.token) {
+      this.$store.dispatch('cart/getCartAction')
+    }
+  },
+  computed: {
+    ...mapState('cart', ['cartList']),
+    ...mapGetters('cart', ['cartTotal', 'selCount', 'selPrice', 'isAllChecked'])
+  },
+  methods: {
+    toggleCheck (id) {
+      this.$store.commit('cart/toggleCheck', id)
+    },
+    toggleAllCheck (flag) {
+      this.$store.commit('cart/toggleAllCheck', flag)
+    },
+    changeCount (value, goodsId, skuId) {
+      this.$store.dispatch('cart/changeCountAction', {
+        value,
+        goodsId,
+        skuId
+      })
+    },
+    async handleDel () {
+      if (this.selCount === 0) return
+      await this.$store.dispatch('cart/delSelect')
+      this.isEdit = false
+    }
+  },
+  watch: {
+    isEdit (flag) {
+      if (!flag) {
+        this.$store.commit('cart/toggleAllCheck', true)
+      } else {
+        this.$store.commit('cart/toggleAllCheck', false)
+      }
+    }
+  }
 }
 </script>
 
@@ -201,6 +258,34 @@ export default {
       }
     }
   }
+}
 
+.empty-cart {
+  padding: 80px 30px;
+
+  img {
+    width: 140px;
+    height: 92px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .tips {
+    text-align: center;
+    color: #666;
+    margin: 30px;
+  }
+
+  .btn {
+    width: 110px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background-color: #fa2c20;
+    border-radius: 16px;
+    color: #fff;
+    display: block;
+    margin: 0 auto;
+  }
 }
 </style>

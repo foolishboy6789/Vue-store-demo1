@@ -52,7 +52,7 @@
             <van-rate :size="16" :value="item.score/2" color="#ffd21e" void-color="#eee" void-icon="star"/>
           </div>
           <div class="content">
-            {{ item.content }}
+            {{ item.content.length > 30 ? item.content.slice(0, 30) + '...' : item.content }}
           </div>
           <div class="time">
             {{ item.create_time }}
@@ -67,11 +67,11 @@
 
     <!-- 底部 -->
     <div class="footer">
-      <div class="icon-home">
+      <div class="icon-home" @click="$router.push('/')">
         <van-icon name="wap-home-o"/>
         <span>首页</span>
       </div>
-      <div class="icon-cart">
+      <div class="icon-cart" @click="$router.push('/cart')">
         <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o"/>
         <span>购物车</span>
@@ -117,7 +117,7 @@ import { getGoodsCommentApi, getGoodsDetailApi } from '@/api/goods'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
 import { addCartApi } from '@/api/cart'
-import { mapMutations, mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ProDetailIndex',
@@ -178,10 +178,11 @@ export default {
           })
         return
       }
-      const { data: { cartTotal } } = await addCartApi(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
-      this.setCartTotal(cartTotal)
-    },
-    ...mapMutations('cart', ['setCartTotal'])
+      await addCartApi(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
+      this.showPannel = false
+      await this.$store.dispatch('cart/getCartAction')
+      this.$toast('加入成功')
+    }
   },
   computed: {
     goodsId () {
@@ -290,6 +291,7 @@ export default {
   .comment-title {
     display: flex;
     justify-content: space-between;
+    font-size: 16px;
 
     .right {
       color: #959595;
@@ -314,6 +316,11 @@ export default {
       .name {
         margin: 0 10px;
       }
+
+    }
+
+    .content {
+      overflow: hidden;
     }
 
     .time {
