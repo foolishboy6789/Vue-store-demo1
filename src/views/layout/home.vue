@@ -49,7 +49,7 @@
 <script>
 
 import GoodsItem from '@/components/GoodsItem.vue'
-import { getHomeData } from '@/api/home'
+import { getHomeDataApi } from '@/api/home'
 
 const Constants = {
   banner: 1,
@@ -70,7 +70,7 @@ export default {
     }
   },
   async created () {
-    const { data: { pageData } } = await getHomeData()
+    const { data: { pageData } } = await getHomeDataApi()
     this.bannerList = pageData.items[Constants.banner].data
     this.navList = pageData.items[Constants.navBar].data
     this.goodsList = pageData.items[Constants.goods].data

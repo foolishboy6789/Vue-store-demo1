@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-const getImgCodeApi = () => {
+export const getImgCodeApi = () => {
   return request.get('/captcha/image')
 }
 
-const sendCodeApi = (captchaCode, captchaKey, mobile) => {
+export const sendCodeApi = (captchaCode, captchaKey, mobile) => {
   return request.post('/captcha/sendSmsCaptcha', {
     form: {
       captchaCode,
@@ -14,7 +14,7 @@ const sendCodeApi = (captchaCode, captchaKey, mobile) => {
   })
 }
 
-const login = (isParty, mobile, partyData, smsCode) => {
+export const loginApi = (isParty, mobile, partyData, smsCode) => {
   return request.post('/passport/login', {
     form: {
       isParty,
@@ -23,10 +23,4 @@ const login = (isParty, mobile, partyData, smsCode) => {
       smsCode
     }
   })
-}
-
-export {
-  getImgCodeApi,
-  sendCodeApi,
-  login
 }

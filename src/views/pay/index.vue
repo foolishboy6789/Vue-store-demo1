@@ -9,13 +9,13 @@
         <van-icon name="logistics"/>
       </div>
 
-      <div v-if="true" class="info">
+      <div v-if="selectAddress?.address_id" class="info">
         <div class="info-content">
-          <span class="name">小红</span>
-          <span class="mobile">13811112222</span>
+          <span class="name">{{ selectAddress.name }}</span>
+          <span class="mobile">{{ selectAddress.phone }}</span>
         </div>
         <div class="info-address">
-          江苏省 无锡市 南长街 110号 504
+          {{ longAddress }}
         </div>
       </div>
 
@@ -95,8 +95,43 @@
 </template>
 
 <script>
+import { getAddressListApi } from '@/api/address'
+
 export default {
-  name: 'PayIndex'
+  name: 'PayIndex',
+  data () {
+    return {
+      addressList: []
+    }
+  },
+  computed: {
+    selectAddress () {
+      // 这里地址管理不是主线业务，直接获取默认第一条地址
+      return this.addressList[0] || {}
+    },
+    longAddress () {
+      const region = this.selectAddress.region
+      return region.province + region.city + region.region + this.selectAddress.detail
+    },
+    mode () {
+      return this.$route.query.mode
+    },
+    cartIds () {
+      return this.$route.query.cartIds
+    }
+  },
+  async created () {
+    await this.getAddressList()
+  },
+  methods: {
+    async getAddressList () {
+      const { data: { list } } = await getAddressListApi()
+      this.addressList = list
+    },
+    getOrderList () {
+
+    }
+  }
 }
 </script>
 

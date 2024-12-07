@@ -61,7 +61,7 @@
 
 <script>
 import { Toast } from 'vant'
-import { getImgCodeApi, login, sendCodeApi } from '@/api/login'
+import { getImgCodeApi, loginApi, sendCodeApi } from '@/api/login'
 import { md5encrypt } from '@/utils/md5util'
 
 export default {
@@ -93,7 +93,7 @@ export default {
     },
     async onSubmit () {
       if (!this.check()) return
-      const res = await login(false, this.phone, {}, this.code)
+      const res = await loginApi(false, this.phone, {}, this.code)
       this.$store.commit('user/setUserInfo', res.data)
       Toast({
         message: '登录成功',
